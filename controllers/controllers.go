@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 
+	"golang.org/x/crypto/bcrypt"
 	"github.com/Sanskrita2001/insta/models"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -63,7 +64,7 @@ func getOneUser(userId string) {
 	result := collection1.FindOne(context.Background(), filter)
 	var user bson.M
 	result.Decode(&user)
-	
+
 	fmt.Println("User details ", result)
 }
 
@@ -85,7 +86,7 @@ func getOnePost(postId string) {
 	result := collection2.FindOne(context.Background(), filter)
 	var post bson.M
 	result.Decode(&post)
-	
+
 	fmt.Println("Post details ", result)
 }
 
@@ -110,6 +111,7 @@ func getAllUsers() []primitive.M {
 	defer cur.Close(context.Background())
 	return users
 }
+
 //Get all posts
 func getAllPosts() []primitive.M {
 	cur, err := collection2.Find(context.Background(), bson.D{})
@@ -132,6 +134,16 @@ func getAllPosts() []primitive.M {
 	return posts
 }
 
+func hashAndSalt(pwd string) string {
+	b:=[]byte(pwd)
+	hash, err := bcrypt.GenerateFromPassword(b, bcrypt.MinCost)
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println("")
+	return string(hash)
+}
+
 //Controllers - files
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -140,6 +152,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	var user models.User
 	_ = json.NewDecoder(r.Body).Decode(&user)
+	res:=hashAndSalt(user.Password)
+	fmt.Println(res)
 	insertOneUser(user)
 	json.NewEncoder(w).Encode(user)
 }
@@ -169,7 +183,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(allUsers)
 }
 
-func GetAPost(w http.ResponseWriter, r *http.Request){
+func GetAPost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Allow-Control-Allow-Methods", "GET")
 

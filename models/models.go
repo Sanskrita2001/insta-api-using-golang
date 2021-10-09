@@ -18,4 +18,5 @@ type Post struct {
 	Caption   string             `json:"caption,omitempty"`
 	ImageUrl  string             `json:"imageUrl,omitempty"`
 	Timestamp time.Time          `json:"timestamp,omitempty"`
+	
 }
