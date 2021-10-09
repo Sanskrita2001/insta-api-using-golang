@@ -31,7 +31,7 @@ go run main.go
 ```
 
 
-## Disclaimer
+### Disclaimer
 I have not used a .env file for the MongoDB Uri now for ease of evaluation. I can do the same while working on real life projects.
 
 ### The API consists of following endpoints: <br/>
