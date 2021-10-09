@@ -7,13 +7,13 @@ import (
 	"log"
 	"net/http"
 
-	"golang.org/x/crypto/bcrypt"
 	"github.com/Sanskrita2001/insta/models"
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"golang.org/x/crypto/bcrypt"
 )
 
 const connectionString = "mongodb+srv://Sanskrita:sanskrita@cluster0.d0vor.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
@@ -135,7 +135,7 @@ func getAllPosts() []primitive.M {
 }
 
 func hashAndSalt(pwd string) string {
-	b:=[]byte(pwd)
+	b := []byte(pwd)
 	hash, err := bcrypt.GenerateFromPassword(b, bcrypt.MinCost)
 	if err != nil {
 		log.Println(err)
@@ -152,7 +152,8 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	var user models.User
 	_ = json.NewDecoder(r.Body).Decode(&user)
-	res:=hashAndSalt(user.Password)
+	res := hashAndSalt(user.Password)
+	user.Password = res
 	fmt.Println(res)
 	insertOneUser(user)
 	json.NewEncoder(w).Encode(user)
